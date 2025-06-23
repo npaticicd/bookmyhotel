@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<settings>
+  <servers>
+   <server>
+      <id>anypoint-exchange-v3</id>
+      <username>~~~Client~~~</username>
+      <password>96e87a53988646d9b9b0d451993689f8~?~f49B98141E704119bd813a899900aAea</password>
+    </server>
+	<server>
+	  <id>anypoint-exchange-v3-student-deployment</id>
+	  <username>~~~Client~~~</username>
+	  <password>96e87a53988646d9b9b0d451993689f8~?~f49B98141E704119bd813a899900aAea</password>
+	</server>
+ </servers>
+</settings>
