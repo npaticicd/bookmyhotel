@@ -127,7 +127,7 @@
 	</pluginRepositories>
 	<distributionManagement>
 		<repository>
-			<id>anypoint-exchange-v3-student-deployment</id>
+			<id>anypoint-exchange-v3-deployment</id>
 			<name>AnyAirline Anypoint Exchange</name>
 			<url>https://maven.anypoint.mulesoft.com/api/v3/organizations/e1ae926a-7124-4fa2-be54-ed63f6b4c539/maven</url>
 			<layout>default</layout>
