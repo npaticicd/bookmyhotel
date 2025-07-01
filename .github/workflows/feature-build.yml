@@ -17,10 +17,18 @@ jobs:
   cd-deploy-feature:
 
     runs-on: ubuntu-latest
+    environment: DEV
+    env:
+      ID_MULESOFT_OPS_USERNAME: ${{ vars.ID_MULESOFT_OPS_USERNAME }}
+      ID_MULESOFT_OPS_PASSWORD: ${{ secrets.ID_MULESOFT_OPS_PASSWORD }}
 
     steps:
     - uses: actions/checkout@v4
-
+    
+      # Deployment to DEV is disabled for now. This is to be enabled only on need basis.         
+    - name: Deploy Mule App To Anypoint Cloudhub2.0 runtime
+      uses: ./.github/actions/anypoint-amc-api-deploy
+        
     - name: Set variables in pom.xml test
       shell: bash
       run: |
