@@ -18,6 +18,9 @@ jobs:
 
     runs-on: ubuntu-latest
     environment: DEV
+    env:
+      ID_MULESOFT_OPS_USERNAME: ${{ vars.ID_MULESOFT_OPS_USERNAME }}
+      ID_MULESOFT_OPS_PASSWORD: ${{ secrets.ID_MULESOFT_OPS_PASSWORD }}
     steps:
     - uses: actions/checkout@v4
 
