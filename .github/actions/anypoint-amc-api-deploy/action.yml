@@ -1,1 +1,19 @@
+name: Maven Deploy to Anypoint Using AMC APIs
+description: Maven Deploy to Anypoint Using AMC APIs
 
+runs:
+  using: "composite"
+
+  steps:
+    # grab access token so we can use exchange API, write to variable called BEARER_TOKEN
+    - name: Get access token for exchange API
+      shell: bash
+      run: |
+        BEARER_TOKEN=$(curl --location --request POST 'https://anypoint.mulesoft.com/accounts/api/v2/oauth2/token' \
+        --header 'Content-Type: application/x-www-form-urlencoded' \
+        --data-urlencode 'client_id=${{ env.ID_MULESOFT_OPS_USERNAME }}' \
+        --data-urlencode 'client_secret=${{ env.ID_MULESOFT_OPS_PASSWORD }}' \
+        --data-urlencode 'grant_type=client_credentials' | jq -r '.access_token')
+        echo "::add-mask::$BEARER_TOKEN"
+        echo "BEARER_TOKEN=$BEARER_TOKEN" >> $GITHUB_ENV
+        echo "delete BEARER_TOKEN:" $BEARER_TOKEN
