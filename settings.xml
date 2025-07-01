@@ -9,7 +9,7 @@
 	<server>
 	  <id>anypoint-exchange-v3-student-deployment</id>
 	  <username>~~~Client~~~</username>
-	  <password>7f5be7d08a88496788e7109ced1fe9fa~?~eef097025F324FB6886bb5a0e32604a4</password>
+	<password>${env.ID_MULESOFT_OPS_USERNAME}~?~${env.ID_MULESOFT_OPS_PASSWORD}</password>
 	</server>
  </servers>
 </settings>
