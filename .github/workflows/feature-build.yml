@@ -1,0 +1,113 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Feature Push- Build
+
+on:
+  push:
+    branches: [ "feature" ]
+
+
+jobs:
+  cd-deploy-feature:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set variables in pom.xml test
+      shell: bash
+      run: |
+
+          ARTIFACTID=$(grep -m1 -o '<artifactId>.*</artifactId>' pom.xml | sed 's/<artifactId>//g' | sed 's/<\/artifactId>//g')
+          sed -i 's/'${ARTIFACTID}'/'${ARTIFACTID}'-'${TARGET_ARTIFACT_ENV_NAME}'/g' pom.xml
+          echo $ARTIFACTID  
+          VERSION=$(grep -m1 -o '<version>.*</version>' pom.xml | sed 's/<version>//g' | sed 's/<\/version>//g')
+          sed -i 's/<version>'${VERSION}'<\/version>/<version>'${VERSION}'-PR${{ github.event.pull_request.number }}<\/version>/g' pom.xml
+          echo $VERSION  
+          VERSION=$(grep -m1 -o '<version>.*</version>' pom.xml | sed 's/<version>//g' | sed 's/<\/version>//g')
+          echo "ASSET_VERSION=$VERSION" >> $GITHUB_ENV
+          echo $GITHUB_ENV  
+          NAME=$(grep -m1 -o '<artifactId>.*</artifactId>' pom.xml | sed 's/<artifactId>//g' | sed 's/<\/artifactId>//g')
+          echo "ASSET_NAME=$NAME" >> $GITHUB_ENV   
+          echo $GITHUB_ENV  
+          
+    - name: Set variables in pom.xml
+      shell: bash
+      run: |
+          ARTIFACTID=$(grep -m1 -o '<artifactId>.*</artifactId>' pom.xml | sed 's/<artifactId>//g' | sed 's/<\/artifactId>//g')
+          sed -i 's/'${ARTIFACTID}'/'${ARTIFACTID}'-'${TARGET_ARTIFACT_ENV_NAME}'/g' pom.xml
+
+          VERSION=$(grep -m1 -o '<version>.*</version>' pom.xml | sed 's/<version>//g' | sed 's/<\/version>//g')
+          sed -i 's/<version>'${VERSION}'<\/version>/<version>'${VERSION}'-PR${{ github.event.pull_request.number }}<\/version>/g' pom.xml
+
+          VERSION=$(grep -m1 -o '<version>.*</version>' pom.xml | sed 's/<version>//g' | sed 's/<\/version>//g')
+          echo "ASSET_VERSION=$VERSION" >> $GITHUB_ENV
+
+          NAME=$(grep -m1 -o '<artifactId>.*</artifactId>' pom.xml | sed 's/<artifactId>//g' | sed 's/<\/artifactId>//g')
+          echo "ASSET_NAME=$NAME" >> $GITHUB_ENV
+          
+    - name: Maven Cache config
+      uses: actions/cache@v4
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: "temurin"
+        java-version: "17"
+
+    - name: Show pom.xml contents
+      shell: bash
+      run: |
+          echo "$(cat pom.xml)"
+
+    - name: Build with Maven
+      shell: bash
+      run: |
+          mvn -B package --file pom.xml \
+          -s settings.xml \
+          -Dsap.lib.type=dll \
+          -Dmule.env=local  -Ddatacenter=sec \
+          -Dmaven.wagon.http.ssl.insecure=true \
+          -Dmaven.wagon.http.ssl.allowall=true \
+          -Dmaven.wagon.http.ssl.ignore.validity.dates=true \
+          -Dcom.sun.net.ssl.checkRevocation=false \
+          -DskipTests
+          
+    - name: Show Details
+      run: echo branch ${GITHUB_BASE_REF}
+
+    - name: Run Single script
+      run: echo hello World
+      
+    - name: Run Multistep script
+      run: echo runs on main branch,
+           echo test deploy
+           
+    - name: Get Pull Request Number Associated with commit
+      uses: actions/github-script@v7
+      id: get_pr_data
+      with:
+         script: |
+              return (
+                await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                  commit_sha: context.sha,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                })
+              ).data[0];
+
+    - name: Pull Request echo
+      run: echo $get_pr_data
+      
